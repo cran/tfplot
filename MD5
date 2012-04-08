@@ -1,0 +1,15 @@
+b4f5a185aef87cf758a7eaf358aa9a3a *DESCRIPTION
+e15217dc033078d1edc22f657a5be7bb *NAMESPACE
+38c2cd07cc160e37d7b4ea0ff24e6ba0 *NEWS
+5908b518095395ac848e9ea2f0b12fda *R/tfplot.R
+fc7aa9b7bd7cb5ff9c30ce36124bbfee *inst/doc/Guide.Stex
+99c8f6278146c0639c2a9d50efd426f8 *inst/doc/Guide.pdf
+d0747042f38676d4c4fc506a547bc828 *man/addDate.Rd
+09b84e9ed6a16523e7037ec5000160d9 *man/diffLog.Rd
+e7758a2b28495db54b566b2995cf7763 *man/percentChange.Rd
+bdd2a60fb71ba982dba496e807744623 *man/tfVisPlot.Rd
+1ee5423b882acd51208e08ef716e5910 *man/tfplot.Rd
+cfccb502379e4713a94be50ff59c4a09 *man/tsScan.Rd
+074dce9eded23a9a47f0b08f2c68cdfe *tests/tfplot.R
+bbd36e7068401aeb68f9757566d3c6e0 *tests/utils.R
+fc7aa9b7bd7cb5ff9c30ce36124bbfee *vignettes/Guide.Stex
