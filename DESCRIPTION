@@ -1,5 +1,5 @@
 Package: tfplot
-Version: 2012.4-1
+Version: 2012.7-1
 Title: Time Frame User Utilities
 Description: Utilities in this package are for simple manipulation and
         quick plotting of time series data. These utilities use the
@@ -17,6 +17,6 @@ Maintainer: Paul Gilbert <pgilbert.ttv9z@ncf.ca>
 URL: http://tsanalysis.r-forge.r-project.org/
 Repository: CRAN
 Repository/R-Forge/Project: tsanalysis
-Repository/R-Forge/Revision: 111
-Packaged: 2012-04-08 18:15:09 UTC; rforge
-Date/Publication: 2012-04-10 04:23:39
+Repository/R-Forge/Revision: 117
+Packaged: 2012-08-14 18:19:58 UTC; rforge
+Date/Publication: 2012-09-20 06:42:38

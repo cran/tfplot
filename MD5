@@ -1,8 +1,8 @@
-b4f5a185aef87cf758a7eaf358aa9a3a *DESCRIPTION
+faabf6da40d70e2711295cdcdb3c0752 *DESCRIPTION
 e15217dc033078d1edc22f657a5be7bb *NAMESPACE
-38c2cd07cc160e37d7b4ea0ff24e6ba0 *NEWS
-5908b518095395ac848e9ea2f0b12fda *R/tfplot.R
-fc7aa9b7bd7cb5ff9c30ce36124bbfee *inst/doc/Guide.Stex
+30ccb63fbc3e5393594a0fc323a6cba8 *NEWS
+282c29450ebb838e16514145bd4c2825 *R/tfplot.R
+88bdd3e7c9a551cb68e684de6c38cfd7 *inst/doc/Guide.Stex
 99c8f6278146c0639c2a9d50efd426f8 *inst/doc/Guide.pdf
 d0747042f38676d4c4fc506a547bc828 *man/addDate.Rd
 09b84e9ed6a16523e7037ec5000160d9 *man/diffLog.Rd
@@ -12,4 +12,4 @@ bdd2a60fb71ba982dba496e807744623 *man/tfVisPlot.Rd
 cfccb502379e4713a94be50ff59c4a09 *man/tsScan.Rd
 074dce9eded23a9a47f0b08f2c68cdfe *tests/tfplot.R
 bbd36e7068401aeb68f9757566d3c6e0 *tests/utils.R
-fc7aa9b7bd7cb5ff9c30ce36124bbfee *vignettes/Guide.Stex
+88bdd3e7c9a551cb68e684de6c38cfd7 *vignettes/Guide.Stex
