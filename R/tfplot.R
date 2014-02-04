@@ -6,14 +6,17 @@
 tfplot <- function(x, ...)  UseMethod("tfplot")
 
 tfplot.default <- function(x, ..., tf=tfspan(x , ...), start=tfstart(tf), end=tfend(tf),
-       series=seq(nseries(x)), 
-       Title=NULL, title=Title, subtitle=NULL,
-       lty = 1:5, lwd = 1, pch = 1, col = 1:6, cex = NULL,
-       xlab=NULL, ylab=seriesNames(x), xlim = NULL, ylim = NULL,
-       graphs.per.page=5, par=NULL, mar=par()$mar, reset.screen=TRUE,
-       lastObs=FALSE, source=NULL,
-       footnote=NULL, footnoteLeft=footnote, footnoteRight=NULL,
-       legend=NULL, legend.loc="topleft")
+	series=seq(nseries(x)), 
+	Title=NULL, title=Title, subtitle=NULL,
+	lty = 1:5, lwd = 1, pch = 1, col = 1:6, cex = NULL,
+	xlab=NULL, ylab=seriesNames(x), xlim = NULL, ylim = NULL,
+	graphs.per.page=5, par=NULL, reset.screen=TRUE,
+	Xaxis="auto", L1=NULL,
+	YaxisL=TRUE, YaxisR=FALSE, Yaxis.lab.rot = "vertical",
+	splitPane=NULL,
+	lastObs=FALSE, source=NULL,
+	footnote=NULL, footnoteLeft=footnote, footnoteRight=NULL,
+	legend=NULL, legend.loc="topleft")
     {#  ... before other args means abbreviations do not work, but otherwise
      # positional matching seems to kick in and an object to be plotted gets used
      #  for start.
@@ -29,6 +32,7 @@ tfplot.default <- function(x, ..., tf=tfspan(x , ...), start=tfstart(tf), end=tf
         stop("tfplot.default does not know how to plot this object.")
      old.par <- par(par)
      on.exit(par(old.par)) 
+     mr <- par()$mar
      names <- seriesNames(x)
      Ngraphs <- min(length(series), graphs.per.page)
      if( (!is.list(xlim)) && (2 == length(xlim)))
@@ -36,8 +40,7 @@ tfplot.default <- function(x, ..., tf=tfspan(x , ...), start=tfstart(tf), end=tf
      if( (!is.list(ylim)) && (2 == length(ylim)))
               ylim <- rep(list(ylim), length(series))
      if(reset.screen)  {
-        if ( (! is.null(par)) && (! is.null(par$mar))) mar <- par$mar
-        par(mfcol = c(Ngraphs, 1), mar=mar, no.readonly=TRUE)
+        par(mfcol = c(Ngraphs, 1), mar=mr, no.readonly=TRUE)
 	}  
 #     tf <- tframe(tfwindow(x, start=start, end=end))
 # would be nice if this could expand tf (tfwindow only truncates - need a
@@ -50,6 +53,7 @@ tfplot.default <- function(x, ..., tf=tfspan(x , ...), start=tfstart(tf), end=tf
      if(length(source)        < N) source        <- rep(source, N)
      if(length(legend)        < N) legend        <- rep(legend, N)
      if(length(legend.loc)    < N) legend.loc    <- rep(legend.loc, N)
+     if(length(YaxisR)        < N) YaxisR        <- rep(YaxisR, N)
  
      for (i in series)
        {if(mode(i)=="character") i <- match(i, names)
@@ -60,7 +64,9 @@ tfplot.default <- function(x, ..., tf=tfspan(x , ...), start=tfstart(tf), end=tf
 	tfOnePlot(z, tf=tf, start=start, end=end, subtitle=subtitle[i],
 	          lty=lty, lwd=lwd, pch=pch, col=col, cex=cex,
 		  xlab=xlab[i], ylab=ylab[i], xlim=xlim[[i]], ylim=ylim[[i]],
-		  lastObs=lastObs, source=source[i],
+		  Xaxis=Xaxis, L1=L1,
+		  YaxisL=YaxisL, YaxisR=YaxisR[i], Yaxis.lab.rot=Yaxis.lab.rot,
+		  splitPane=splitPane,lastObs=lastObs, source=source[i],
 		  footnoteLeft=footnoteLeft[i], footnoteRight=footnoteRight[i],
 		  legend=lgd, legend.loc=legend.loc[i])
         if(!is.null(title) && (i==1) && (is.null(options()$PlotTitles)
@@ -73,13 +79,23 @@ tfplot.default <- function(x, ..., tf=tfspan(x , ...), start=tfstart(tf), end=tf
 tfOnePlot <- function(x, tf=tframe(x), start=tfstart(tf), end=tfend(tf), 
          Title=NULL, title=Title, subtitle=NULL, lty=1:5, lwd=1, pch=1, col=1:6, cex=NULL,
         xlab=NULL, ylab=NULL, xlim=NULL, ylim=NULL, par=NULL,
+	Xaxis="auto", L1=NULL,
+	YaxisL=TRUE, YaxisR=FALSE, Yaxis.lab.rot = "vertical",
+	splitPane=NULL,
 	lastObs=FALSE,  
 	source=NULL,
 	footnote=NULL, footnoteLeft=footnote, footnoteRight=NULL,
 	legend=NULL, legend.loc="topleft"){
-  if (!is.tframed(x)) UseMethod("plot")
-  else
-    {#if(is.null(source)) source <- 
+  if (inherits(x, "zooreg")) x <- as.ts(x)
+  old.par <- par(par)
+  on.exit(par(old.par)) 
+  mr <- par()$mar
+
+  if (!is.tframed(x)) plot(x, start=start, end=end, 
+              lty=lty, lwd=lwd, pch=pch, col=col, cex=cex,
+              xlab=xlab, ylab=ylab, xlim=xlim, ylim=ylim)
+  else {
+      #if(is.null(source)) source <- 
      #        if(is.null(options("TSsource"))) NULL else(options()$TSsource)(x)
      if (!is.null(start)) x <- tfwindow(x, start=start, warn=FALSE)
      if (!is.null(end))   x <- tfwindow(x, end=end, warn=FALSE)
@@ -89,52 +105,187 @@ tfOnePlot <- function(x, tf=tframe(x), start=tfstart(tf), end=tfend(tf),
      tline <- time(x)
      if( inherits(tline, "ts")) tline <- unclass(tline)
      # formerly matplot with tline not a matrix was used, but this does
-     # not plot (non-ts) dates as well as plot.
+     # not plot (non-ts) dates as well as plot().
      if (lastObs) {
- 	if(is.null(frequency(x)))   dt <- end(x)
-	else if(frequency(x) == 12) dt <- paste(c("Jan", "Feb","Mar","Apr","May",
- 	   "Jun","Jul","Aug","Sep","Oct","Nov","Dec")[end(x)[2]],end(x)[1],
- 	       collapse=" ")
- 	else if(frequency(x) == 4) dt <- paste(
- 		 c("Q1", "Q2","Q3","Q4")[end(x)[2]],end(x)[1], collapse=" ")
- 	else   dt <- end(x)
+ 	dt <- end(x)
+	if(!is.null(frequency(x))) {
+	  if(frequency(x) == 12)
+	      dt <- paste(c("Jan", "Feb","Mar","Apr","May","Jun","Jul",
+ 	          "Aug","Sep","Oct","Nov","Dec")[dt[2]],dt[1], collapse=" ")
+ 	  else if(frequency(x) == 4)
+	      dt <- paste(c("Q1","Q2","Q3","Q4")[dt[2]],dt[1], collapse=" ")
+	}
  	last <- paste("Last observation:", dt)
        }
+     # zoo freq==1 could be anything, so let zoo handle it
+     noAuto <- inherits(x, "zoo") ||is.null(Xaxis) || !(frequency(x) %in% c(1,4,12))
      N <- nseries(x)
-     if (1 == N) x <- as.matrix(x)
+     if (1 == N) dim(x) <- c(length(x),1)
      else {
         if (length(lty) < N) lty <- rep(lty,length.out=N)
         if (length(lwd) < N) lwd <- rep(lwd,length.out=N)
         if (length(pch) < N) pch <- rep(pch,length.out=N)
         if (length(col) < N) col <- rep(col,length.out=N)
 	}
-     plot(tline, x[,1], type="l", lty=lty, lwd=lwd, pch=pch, 
-        col=col, cex=cex, xlab=xlab, ylab=ylab, xlim=xlim, ylim=ylim, par=par)
 
-     if (2 <= N) for (i in 2:N) lines(tline, x[,i],
-       type="l", lty=lty[i], lwd=lwd[i], pch=pch[i], col=col[i], par=par)
-    }
-    if (!is.null(title) && (is.null(options()$PlotTitles) ||
-        options()$PlotTitles)) title(main = title)	
-    if (!is.null(subtitle) && (is.null(options()$PlotSubtitles) ||
-        options()$PlotSubtitles)) title(main = subtitle, line=0.5, 
-	  cex.main=0.8 *par("cex.main"), font.main=0.5 *par("font.main"))	
-    if (!is.null(source) && (is.null(options()$PlotSources) ||
-        options()$PlotSourcse)) 
-	     mtext(source, side=1, line = 2, adj=0, cex=0.7)	
-    if (lastObs) mtext(last, side=1, line = 2, adj=1, cex=0.7)
-     # footnote will go on another line with \n
-    if (!is.null(footnoteLeft) && (is.null(options()$PlotFootnotes) ||
-        options()$PlotFootnotes)) 
-	     mtext(footnoteLeft, side=1, line = 3, adj=0, cex=0.7)	
-    if (!is.null(footnoteRight) && (is.null(options()$PlotFootnotes) ||
-        options()$PlotFootnotes)) 
-	     mtext(footnoteRight, side=1, line = 3, adj=1, cex=0.7)	
-    if (!is.null(legend)) legend(legend.loc, inset = c(0.05, .05), 
-       col=col, lty=lty, cex=0.7, legend=legend)
+     # add extra space for titles with a new line character
+     m3 <- mr[3]
+     if (is.character(title)    && grepl("\n", title))    m3 <- m3 + 1 
+     if (is.character(subtitle) && grepl("\n", subtitle)) m3 <- m3 + 1 
+     
+     mr[3] <- m3
+     
+     if(is.null(splitPane)){
+        par(mar=mr)
+        plot(tline, x[,1], type="l", lty=lty, lwd=lwd, pch=pch, col=col, 
+	    cex=cex, xlab=xlab, ylab=ylab, xlim=xlim, ylim=ylim,
+   	    xaxt = if(noAuto) "s" else "n", yaxt = "n")
+   	
+   	if (2 <= N) for (i in 2:N) lines(tline, x[,i],
+   	  type="l", lty=lty[i], lwd=lwd[i], pch=pch[i], col=col[i])
+
+   	#if(noAuto) axis(side=1) in some cases this does not seem to work
+	#as well as specifying plot(xaxt = "s" )
+	
+   	if(!noAuto) 
+	  if("auto" == Xaxis) tfXaxis(tline, L1=L1)
+   	  else stop("Xaxis specification invalid.")
+
+   	tfYaxis(YaxisL=YaxisL, YaxisR=YaxisR, Yaxis.lab.rot=Yaxis.lab.rot)
+	}
+     else { # splitPane
+	mrL <- mrR <- mr
+	mrL[4] <- 0
+	mrR[2] <- 0
+	#mn <- min(x)
+    	#mn <- mn - 0.01 * abs(mn)
+    	#mx <- max(x)
+    	#mx <- mx  + 0.01 * abs(mx)
+    	#left side, screen(1)
+    	par(fig=c(0, .65, 0,1), mar=mrL)
+   	plot(tline, x[,1], type="l", lty=lty, lwd=lwd, pch=pch, col=col, 
+	    cex=cex, xlab=xlab, ylab=ylab, xlim=xlim, ylim=ylim, 
+   	    xaxt = if(noAuto) "s" else "n", yaxt = "n")
+   	
+   	if (2 <= N) for (i in 2:N) lines(tline, x[,i],
+   	  type="l", lty=lty[i], lwd=lwd[i], pch=pch[i], col=col[i])
+
+   	if(!noAuto) 
+	  if("auto" == Xaxis) tfXaxis(tline, L1=L1)
+   	  else stop("Xaxis specification invalid.")
+
+   	tfYaxis(YaxisL=YaxisL, YaxisR=FALSE, Yaxis.lab.rot=Yaxis.lab.rot)
+ 
+   	#right side, screen(2)
+   	b  <-  tfwindow(x, start=tline[length(tline)] -(splitPane-1)/frequency(x))
+   	bt <- time(b)
+   	if( inherits(bt, "ts")) bt <- unclass(bt)
+	par(fig=c(.7, 1, 0,1), new=TRUE, mar=mrR)
+	plot(bt, b[,1], type="l", lty=lty, lwd=lwd, pch=pch, col=col, 
+	    cex=cex, xlab=xlab, ylab=ylab, xlim=xlim, ylim=ylim, 
+   	    xaxt = if(noAuto) "s" else "n", yaxt = "n")
+   	
+   	if (2 <= N) for (i in 2:N) lines(bt, b[,i],
+   	  type="l", lty=lty[i], lwd=lwd[i], pch=pch[i], col=col[i])
+
+   	if(!noAuto) 
+	  if("auto" == Xaxis) tfXaxis(bt, L1=L1)
+   	  else stop("Xaxis specification invalid.")
+
+   	tfYaxis(YaxisL=FALSE, YaxisR=YaxisR, Yaxis.lab.rot=Yaxis.lab.rot)
+	# Now set back to full device for title and footnotes.
+	# setting usr works around what appears to be  bug. (The footnotes
+	# do not get set properly relative to the center.)
+	par(fig=c(0, 1, 0,1), new=FALSE, mar=mr, usr=c(0,1,0,1))
+	}
+     }
+  if (!is.null(title) && (is.null(options()$PlotTitles) ||
+      options()$PlotTitles)) title(main = title)      
+  if (!is.null(subtitle) && (is.null(options()$PlotSubtitles) ||
+      options()$PlotSubtitles)) title(main = subtitle, line=0.5, 
+        cex.main=0.8 *par("cex.main"), font.main=0.5 *par("font.main"))       
+  if (!is.null(source) && (is.null(options()$PlotSources) ||
+      options()$PlotSourcse)) 
+               mtext(source, side=1, line = 2, adj=0, cex=0.7)    
+  if (lastObs) mtext(last,   side=1, line = 2, adj=1, cex=0.7)
+   # footnote will go on another line with \n
+  if (!is.null(footnoteLeft) && (is.null(options()$PlotFootnotes) ||
+      options()$PlotFootnotes)) 
+           mtext(footnoteLeft, side=1, line = 3, adj=0, cex=0.7)      
+  if (!is.null(footnoteRight) && (is.null(options()$PlotFootnotes) ||
+      options()$PlotFootnotes)) 
+           mtext(footnoteRight, side=1, line = 3, adj=1, cex=0.7)     
+  if (!is.null(legend)) legend(legend.loc, inset = c(0.05, .05), 
+     col=col, lty=lty, cex=0.7, legend=legend)
   invisible(x)
  }
 
+
+tfYaxis <- function (YaxisL=TRUE, YaxisR=FALSE, Yaxis.lab.rot = "vertical" ) {
+   if (Yaxis.lab.rot == "vertical" )   las <- 3
+   if (Yaxis.lab.rot == "horizontal" ) las <- 1
+   ysc <- par()$yaxp
+   if(ysc[3] < 10) blank <- FALSE else TRUE #unlabelled intermediate tick marks
+   if (! blank) {
+      # calculate tick marks in between labeled ones. If the labels are at intervals of 
+      #   5 ..9 this should give 1. At 0.5 ... 0.9 this should give 0.1
+      by <- 10^(ceiling(log10(((ysc[2] - ysc[1]) / ysc[3]))-1))
+      at1 <- seq(ysc[1], ysc[2], by = by)
+      }
+   if (YaxisL) {
+      axis(side = 2, las=las)
+      if (! blank) axis(side = 2, at= at1, tcl=-0.3, labels=FALSE)
+      }
+   
+   if ((is.numeric(YaxisR)) || YaxisR) { # numeric or T
+      scR <- axis(side = 4, las=las, labels=!is.numeric(YaxisR))
+      if (is.numeric(YaxisR))
+        axis(side = 4, las=las, at=scR, labels=as.graphicsAnnot(YaxisR * scR))
+      if (! blank) axis(side = 4, at= at1, tcl=-0.3, labels=FALSE)
+      }
+   invisible()
+   }
+
+
+tfXaxis <- function (x, L1 = NULL) {
+   at1 <- time(x)
+   fr <- frequency(x)
+   mgp1 <- 0.5  # ignored with lab1 FALSE
+   mgp2 <- 1.2  # ignored with lab1 FALSE
+   
+   # note that fr not in these cases is usually given to UseMethod in tfOnePlot
+   # and should never call tfXaxis.
+   if (is.null(fr))  stop("frequency must not be null for auto axis calculation.")
+   else if (fr == 1 ) {
+     blank <- TRUE 
+     at2 <- at1
+     }
+   else if (fr == 4 ) {
+     if(is.null(L1)) L1 <- c("Q1","Q2","Q3","Q4")
+     at2 <- unique(floor(at1))
+     blank <- length(at2) > 8 
+     }
+   else if (fr == 12) {
+     if(is.null(L1)) L1 <- c("J","F","M","A","M","J","J","A","S","O","N","D")
+     at2 <- unique(floor(at1))
+     blank <- length(at2) > 4 
+     }
+   else stop("frequency ", fr, "is not handled by auto axis calculation.")
+
+   # omit period labels when it gets too crowded    
+   if (blank) lab1 <- FALSE # omit period labels
+   else {
+     lab1 <- rep_len(L1, length.out=fr * length(at2))
+     # arrange for not starting in first period of year
+     s <- fr - sum(at1 < (1 + at2[1]))
+     if (0 < s)  lab1 <- lab1[-seqN(s)]
+     lab1 <- lab1[seqN(Tobs(x))]
+     }
+   axis(side = 1, at = at1,   cex.axis=0.6, labels = lab1, mgp = c(3, mgp1, 0))
+   axis(side = 1, at = at2,	  tcl=-0.8, labels = FALSE)
+   axis(side = 1, at = 0.5 + at2, tcl=0,    labels=at2, mgp = c(3, mgp2, 0))
+   invisible(x)
+}
 
 
 diffLog <- function(obj, lag = 1, base = exp(1),
