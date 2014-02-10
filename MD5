@@ -1,7 +1,7 @@
-d7f719b134e94b37d4f491b73e7d4d43 *DESCRIPTION
+d5d15c54dd340502d67b1e9374fc4b46 *DESCRIPTION
 b72788e0f0007d50afa9dabd2dc0103d *NAMESPACE
-82993253bb8d8ff5b3263b32b674294b *NEWS
-d5984feec673d10d54a690af89fe7b9f *R/tfplot.R
+fd37c0e0d0ef5e96cda432418d0faea5 *NEWS
+48ec5b083bf59bb7d0be70220fc63110 *R/tfplot.R
 777e963c7fcbea883de3fc2961eaec69 *build/vignette.rds
 88bdd3e7c9a551cb68e684de6c38cfd7 *inst/doc/Guide.Stex
 99c8f6278146c0639c2a9d50efd426f8 *inst/doc/Guide.pdf
