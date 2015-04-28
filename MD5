@@ -1,8 +1,8 @@
-d5d15c54dd340502d67b1e9374fc4b46 *DESCRIPTION
+ec7b1a5e2449456bd94b169b1ca43a06 *DESCRIPTION
 b72788e0f0007d50afa9dabd2dc0103d *NAMESPACE
-fd37c0e0d0ef5e96cda432418d0faea5 *NEWS
-48ec5b083bf59bb7d0be70220fc63110 *R/tfplot.R
-777e963c7fcbea883de3fc2961eaec69 *build/vignette.rds
+3f788e4246eaebe89f1a17675ee736e4 *NEWS
+ac58e29fa45212e5fdaf3e5679b255b5 *R/tfplot.R
+301f462ffaa30c0e4c46c2180ead3434 *build/vignette.rds
 88bdd3e7c9a551cb68e684de6c38cfd7 *inst/doc/Guide.Stex
 99c8f6278146c0639c2a9d50efd426f8 *inst/doc/Guide.pdf
 d0747042f38676d4c4fc506a547bc828 *man/addDate.Rd
@@ -11,8 +11,8 @@ e7758a2b28495db54b566b2995cf7763 *man/percentChange.Rd
 bdd2a60fb71ba982dba496e807744623 *man/tfVisPlot.Rd
 b5a0c17c99219cb63ae5b7dc4ab2c92e *man/tfplot.Rd
 cfccb502379e4713a94be50ff59c4a09 *man/tsScan.Rd
-0d3f1890603de96fc736ccadff18aa7e *tests/autoAxis.R
-176363d053cd143bed887a26576adbd7 *tests/tfOnePlot.R
-074dce9eded23a9a47f0b08f2c68cdfe *tests/tfplot.R
-bbd36e7068401aeb68f9757566d3c6e0 *tests/utils.R
+db127ea1b732ef374d704e0eb71752f8 *tests/autoAxis.R
+c040c30d6c849ac3d250b00cd23e5411 *tests/tfOnePlot.R
+3d7a786efcee67fe006a66b53a23dfc7 *tests/tfplot.R
+d16d66a155d9bbdb99f6f3e439cabda8 *tests/utils.R
 88bdd3e7c9a551cb68e684de6c38cfd7 *vignettes/Guide.Stex
