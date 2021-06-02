@@ -35,10 +35,11 @@
     \code{\link{scan}, \link{write}}
 }
 \examples{
-
+tmpfile <- tempfile()
+on.exit(unlink(tmpfile) )
 z <- ts(matrix(100 + rnorm(200),100,2), start=c(1991,1), frequency=4)
-tsWrite(z, file="tmp.test.data.csv")
-zz <- tsScan("tmp.test.data.csv", nseries=2)
+tsWrite(z, file=tmpfile)
+zz <- tsScan(tmpfile, nseries=2)
 
 max(abs(z - zz)) 
 }

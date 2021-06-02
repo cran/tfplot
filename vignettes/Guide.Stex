@@ -50,9 +50,9 @@ with:
 \begin{Scode}
  z  <- ts(cumsum(rnorm(200)), start=c(1990, 1), frequency=12) 
  x  <- ts(cumsum(rnorm(200)), start=c(1990, 1), frequency=12) 
- zz <- ts(apply(matrix(rnorm(600), 100,3),2, cumsum), 
+ zz <- ts(apply(matrix(rnorm(300), 100,3),2, cumsum), 
            start=c(1990, 1), frequency=4) 
- xx <- ts(apply(matrix(rnorm(600), 100,3),2, cumsum), 
+ xx <- ts(apply(matrix(rnorm(300), 100,3),2, cumsum), 
            start=c(1990, 1), frequency=4) 
 \end{Scode}
 

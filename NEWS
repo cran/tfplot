@@ -1,3 +1,13 @@
+Changes in tfplot version 2021.6-1
+
+   o	Fixed example writing to file in user directory. Now uses tempfile().  
+
+   o	Fixed Guide and tsScan examples so data length and matrix dimension 
+    	match (as caught by a new CRAN check).	
+
+   o	Fixed Rbuildignore so that files from building vignettes are 
+    	not omitted in the package build.	
+
 Changes in tfplot version 2015.12-1
 
    o	Increased split plot right margin size to avoid label truncation.
